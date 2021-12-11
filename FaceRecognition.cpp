@@ -1,9 +1,13 @@
 ﻿#include <iostream>
 #include <vector>
+#include <fstream>
+#include <cstdlib>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/objdetect.hpp>
+#include <windows.h>
+#include <sys/stat.h>
 using namespace cv;
 using namespace std;
 
@@ -14,13 +18,36 @@ int main()
 	CascadeClassifier faceCascade;
 	faceCascade.load("C:\\Users\\samti\\source\\repos\\FaceRecognition/FaceRecognition/haarcascade/haarcascade_frontalface_default.xml");
 
-	int temperature = 36;
 	VideoCapture cap(0);
 
+	int temperature = 36;
+	Scalar tempColor;
+	Scalar goodTemperature = *new Scalar(0, 255, 0);
+	Scalar InterTemperature = *new Scalar(0, 153, 255);
+	Scalar BadTemperature = *new Scalar(0, 0, 255);
 
 	while (true)
 	{
-		
+		// Импровизированный датчик температуры
+		//while (true)
+		//{
+		//	temperature = 35 + rand() % 6;
+		//	break;
+		//}
+
+		if (temperature <= 36)
+		{
+			tempColor = goodTemperature;
+		}
+		else if (temperature > 36 && temperature < 38)
+		{
+			tempColor = InterTemperature;
+		}
+		else if (temperature > 38)
+		{
+			tempColor = BadTemperature;
+		}
+
 		Mat img;
 		cap >> img;
 		Mat grayscale;
@@ -32,23 +59,20 @@ int main()
 
 		for (Rect area : faces)
 		{
+
 			Scalar drawColor = Scalar(255, 0, 0);
 			rectangle(img, Point(cvRound(area.x * scale), cvRound(area.y * scale)),
 				Point(cvRound((area.x + area.width - 1) * scale), cvRound((area.y + area.height - 1) * scale)), drawColor);
+			putText(img, to_string(temperature), Point(cvRound(area.x * scale), cvRound(area.y * scale)), FONT_HERSHEY_SIMPLEX, 0.75, tempColor, 2);
 		}
-
 
 		cap.read(grayscale);
 		imshow("Temperature", img);
 		waitKey(1);
 
-		// Если t > то скрин и заливает в бд
-		if (temperature >= 36)
-		{
-			imwrite("1.jpeg", img);
-		}
+		
 	}
-	
+
 
 	return 0;
 }
@@ -59,13 +83,13 @@ int main()
 
 
 
-
-
-
 /*
 
 
-
+ //Если t > то скрин и заливает в бд
+		if (temperature >= 36)
+		{
+		}
 
 	int counter = 0;
 	for (int i = 0; i <= 10; i++)
@@ -90,7 +114,7 @@ int main()
 	******************************************************
 
 	// Рабочий!!! вариант
-	
+
 		double scale = 3.0;
 	CascadeClassifier faceCascade;
 	faceCascade.load("C:\\Users\\samti\\source\\repos\\FaceRecognition/FaceRecognition/haarcascade/haarcascade_frontalface_default.xml");
@@ -101,7 +125,7 @@ int main()
 
 	while (true)
 	{
-		
+
 		Mat img;
 		cap >> img;
 		Mat grayscale;
@@ -129,13 +153,13 @@ int main()
 			imwrite("1.jpeg", img);
 		}
 	}
-	
+
 
 	return 0;
-	
-	
-	
-	
+
+
+
+
 	//
 
 
